@@ -1,0 +1,70 @@
+############configuration ########################
+school_name = "Sainik Public School"
+width = 60
+student_result_db = {}
+teachers_db = {}
+
+##################################################
+
+def pheader():
+    pass
+
+def fist_screen():
+    pass
+
+def login_screen(type):
+    pass
+
+def verify_cred_data(uname,paswd):
+    pass
+
+def pcommon_choice_menu():
+    pass
+
+def teacher_choice_menu():
+    pass
+
+def student_choice_menu():
+    pass
+
+def ask_stud_info():
+    pass
+
+def get_next_roll_no():
+    pass
+
+def store_student_info():
+    pass
+
+def student_flow():
+    pass
+
+def teacher_flow():
+    pass
+
+def print_result():
+    pass
+
+def p_result_format(data,rank):
+    pass
+
+def get_student_data(r_no):
+    pass
+
+def search_student_roll():
+    pass
+
+def get_stud_roll_no(name):
+    pass
+
+def main():
+    ch = fist_screen()
+    if ch == '1':
+        teacher_flow()
+    elif ch == '2':
+        student_flow()
+    else:
+        print('ERROR : INVALID CHOICE !! ')
+
+main()
+
