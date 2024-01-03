@@ -1,0 +1,53 @@
+import sqlite3
+
+def add_data(fname,sname,marks):
+    dbc_in_file = sqlite3.connect('students') #connect to db
+    db_cursor = dbc_in_file.cursor()  # create db cursor
+
+    create_query = '''CREATE TABLE IF NOT EXISTS Results(
+                   rno INTEGER PRIMARY KEY AUTOINCREMENT,
+                   lname varchar(255) NOT NULL,
+                   fname varchar(255),
+                   marks int);'''
+    
+    #print(create_query)
+    
+    # create a table
+    db_cursor.execute(create_query)
+    
+    insert_query = f"insert into Results (lname,fname,marks) values ('{sname}','{fname}',{marks});"
+    #print(insert_query)
+    db_cursor.execute(insert_query)
+    
+    dbc_in_file.commit()
+
+    dbc_in_file.close()
+    
+
+def get_result(rno):
+    dbc_in_file = sqlite3.connect('students') #connect to db
+    db_cursor = dbc_in_file.cursor()  # create db cursor
+    
+    get_query = f'select * from Results where rno=={rno};'
+    #print(get_query)
+    db_cursor.execute(get_query)
+    data = db_cursor.fetchall()
+    dbc_in_file.close()
+    return data
+
+
+def get_all_results():
+    dbc_in_file = sqlite3.connect('students') #connect to db
+    db_cursor = dbc_in_file.cursor()  # create db cursor
+    
+    get_query = f'select * from Results;'
+    #print(get_query)
+    db_cursor.execute(get_query)
+    data = db_cursor.fetchall()
+    dbc_in_file.close()
+    return data
+
+
+def update_result():
+    pass
+    
