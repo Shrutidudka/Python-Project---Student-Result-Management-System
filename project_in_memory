@@ -1,0 +1,202 @@
+############  Configuration ######################
+
+school_name = "Sainik Public School"
+student_result_db = {}
+teachers_db = {1:
+               {'name' : 'arush',
+                'passwd':'123'}
+              }
+
+################ GLOBAL VARIABLES  ###############
+
+width = 60
+rno = 0
+max_tries = 3
+phash = '-' * width
+all_percentage = []
+
+################# Colour Codes ####################
+
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKCYAN = '\033[96m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
+
+################ Common Error Messages ###########
+
+m_101 = " Maximum Tries Exceeded "
+m_102 = " Invalid Credentials !! "
+m_103 = " Invalid Choice "
+m_104 = " Invalid Roll Number "
+m_105 = " Result Not Found "
+m_106 = " Name Not Found !! "
+m_107 = f"{BOLD}{OKGREEN}{'---Thank You---'.center(width)}{ENDC}"
+
+################# Business Logic ##################
+
+def log_me(err_code):
+    mesg = f"{FAIL}ERROR : {err_code} {ENDC}"
+    print(mesg)
+    
+def pheader(head = school_name):
+    mesg = f'{BOLD}{HEADER}{phash}\n{head.center(width)}\n{phash} {ENDC}'
+    print(mesg)
+
+def fist_screen():
+    pheader()
+    print(f'{OKCYAN}\n1) Teacher login\n2) Student login\n3) Exit{ENDC}')
+    ch = input('Enter choice : ')
+    return ch
+
+def login_screen():
+    uname  = input('Enter your username : ')
+    passwd = input('Enter your Password : ')
+    return uname,passwd
+    
+def verify_cred_data(uname,paswd):
+    for id in teachers_db:
+        if teachers_db[id]['name'] == uname and \
+                    teachers_db[id]['passwd'] == paswd:
+            return True
+    return False
+
+def pcommon_choice_menu():
+    print(f'''{OKCYAN}\n1. Get Result\n2. Search Roll Number{ENDC}''')
+
+def teacher_choice_menu():
+    pheader('Teacher`s Console ')
+    pcommon_choice_menu()
+    print(f'{OKCYAN}3. Enter student info{ENDC}') 
+    print(f'{OKCYAN}4. Exit{ENDC}')
+    ch = input('Enter choice : ')
+    return ch
+
+def student_choice_menu():
+    pcommon_choice_menu()
+    ch = input('Enter choice : ')
+    return ch
+
+def ask_stud_info():
+    name = input('Enter students Name : ')
+    eng = int(input('Enter English Marks : '))
+    maths = int(input('Enter Maths Marks : '))
+    return name,eng,maths
+    
+def get_next_roll_no():
+    global rno
+    rno = rno + 1
+    return rno
+
+def store_student_info(name,eng,maths):
+    global student_result_db,all_percentage
+    rno = get_next_roll_no()
+    student_result_db[rno] = {'name' : name,
+                             'eng': eng,
+                             'maths': maths}
+    percent = (eng+maths) * 0.5
+    student_result_db[rno]['percent'] = percent
+    all_percentage.append(percent)
+    all_percentage = list(set(all_percentage))
+    all_percentage.sort(reverse=True)
+    
+def student_flow():
+    for i in range(3):
+        ch = student_choice_menu()
+        if ch == '1':
+            print_result()
+            break
+        elif ch =='2':
+            search_student_roll()
+            break
+        else:
+            log_me(m_103)
+
+def login_teacher():
+    login_sucess = False
+    for i in range(max_tries):
+        u,p = login_screen()
+        login_sucess = verify_cred_data(u,p)
+        if login_sucess:
+            return True
+        else:
+            log_me(m_102)
+            print('Please Try Again \n')
+    return False
+            
+def teacher_flow():
+    if login_teacher():
+        while True:
+            ch = teacher_choice_menu()
+            if ch == '1':
+                rno,data = print_result()
+                if data:
+                    display_result(rno,data)
+            elif ch =='2':
+                search_student_roll()
+            elif ch == '3':
+                name,emarks,mmarks = ask_stud_info()
+                store_student_info(name,emarks,mmarks)
+            elif ch == '4':
+                break
+            else:
+                log_me(m_103)
+    else:
+        log_me(m_101)
+        
+def print_result():
+    for i in range(3):
+        rno = int(input('Enter Roll number : '))
+        if rno not in student_result_db:
+            log_me(m_104)
+        else:
+            return rno,student_result_db[rno]
+    log_me(m_101)
+    
+        
+def display_result(rno,data):
+    rank = all_percentage.index(data["percent"]) + 1
+    pheader()
+    print(f'{OKBLUE}Name        : {data["name"]}')
+    print(f'Roll Number : {rno}')
+    print(phash)
+    print(f'English     : {data["eng"]}')
+    print(f'Maths       : {data["maths"]}')
+    print(phash)
+    print(f'Percentage  :  {data["percent"]}')
+    print(f'Rank        :  {rank}{ENDC}')
+    print(phash)
+                                 
+def get_student_data(r_no):
+    pass
+
+def search_student_roll():
+    name_found = False
+    name = input('Enter Name to search : ')
+    lwidth = width//2
+    for no in student_result_db:
+        if name in student_result_db[no]['name']:
+            naam = student_result_db[no]['name']
+            print(f"{naam.ljust(lwidth)} {str(no).rjust(lwidth)}")
+            name_found = True
+    if not name_found:
+        log_me(m_106)
+    
+def main():
+    while True:
+        ch = fist_screen()
+        if ch == '1':
+            teacher_flow()
+        elif ch == '2':
+            student_flow()
+        elif ch == '3':
+            print(m_107)
+            break
+        else:
+            log_me(m_103)
+
+main()
